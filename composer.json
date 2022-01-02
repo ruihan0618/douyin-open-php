@@ -1,0 +1,33 @@
+{
+    "name": "visionRhythm/douyin-php",
+    "description": "VisionRhythm php Library",
+    "keywords": [
+        "VisionRhythm",
+        "shijuelvdong",
+        "douyin api",
+        "api"
+    ],
+    "authors": [
+        {
+            "name": "VisionRhythm team",
+            "homepage": "https://www.visionrhythm.com/"
+        }
+    ],
+    "homepage": "https://www.visionrhythm.com/",
+    "require": {
+        "php": ">=5.6.0",
+        "ext-curl": "*",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "ext-bcmath": "*"
+    },
+    "require-dev": {
+    },
+    "autoload": {
+        "psr-4": { "VisionRhythm\\" : "lib/" }
+    },
+    "extra": {
+        "branch-alias": {
+        }
+    }
+}
