@@ -12,9 +12,9 @@ class Auth extends ApiResource
      * @throws Error\Api
      * @throws Error\InvalidRequest
      */
-    public static function connect($scope = null, $options = null)
+    public static function connect($scope = null, $state = null, $options = null)
     {
-        $params = ['client_key'=>VisionRhythm::$clientId, 'response_type'=>'code' , 'scope'=>$scope, 'redirect_uri'=>VisionRhythm::$redirectUri];
+        $params = ['client_key'=>VisionRhythm::$clientId, 'response_type'=>'code' , 'scope'=>$scope, 'state' => $state, 'redirect_uri'=>VisionRhythm::$redirectUri];
         return self::_authConnect($params, $options);
     }
 
