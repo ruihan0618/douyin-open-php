@@ -8,14 +8,9 @@ require dirname(__FILE__) . '/config.php';
  * 授权链接
  */
 
-$open_id = '05bd883b-98fb-48df-80b5-30cd8e088112';
-$access_token = 'act.cd58e33b00f6dc1f7812db386f3bc923ajCeiOZIpnh1ZYQcoT572mjYeYch';
+$open_id = '';
+$access_token = '';
 try {
-//    $scope = 'user_info,following.list,fans.list,video.create,video.delete,video.data,video.list,video.search,data.external.user,data.external.item';
-//    $authUri = \Visionrhythm\Auth::connect($scope);
-//    header('Location: '.$authUri);
-//    echo $authUri;
-
 
     $userInfo = \VisionRhythm\User::info($open_id, $access_token);
     echo($userInfo)."\r\n";
