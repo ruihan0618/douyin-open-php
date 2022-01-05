@@ -272,7 +272,7 @@ class ApiRequest
         $opts[CURLOPT_HTTPHEADER] = $headers;
         curl_setopt_array($curl, $opts);
         $rbody = curl_exec($curl);
-        
+
         if ($rbody === false) {
             $errno = curl_errno($curl);
             $message = curl_error($curl);

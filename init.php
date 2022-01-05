@@ -38,5 +38,6 @@ require(dirname(__FILE__) . '/lib/AppBase.php');
 require(dirname(__FILE__) . '/lib/Auth.php');
 require(dirname(__FILE__) . '/lib/User.php');
 require(dirname(__FILE__) . '/lib/Video.php');
+require(dirname(__FILE__) . '/lib/UserExternal.php');
 require(dirname(__FILE__) . '/lib/Webhook.php');
 require(dirname(__FILE__) . '/lib/WebhookSignature.php');

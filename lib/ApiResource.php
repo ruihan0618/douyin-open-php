@@ -168,7 +168,25 @@ abstract class ApiResource extends VisionRhythmObject
         return [$response, $opts];
     }
 
+
     /**
+     * 该接口用于获取接口调用的凭证client_access_token，主要用于调用不需要用户授权就可以调用的接口；该接口适用于抖音/头条授权。
+     * @param $params
+     * @return array|Util\stdObject|VisionrhythmObject
+     * @throws Error\Api
+     * @throws InvalidRequest
+     */
+    protected static function _clientToken($params)
+    {
+        self::_validateParams($params);
+        $url = static::baseUrl()."/oauth/client_token/";
+
+        list($response, $opts) = static::_staticRequest('post', $url, $params, []);
+        return Util\Util::convertToVisionRhythmObject($response, $opts);
+    }
+
+    /**
+     * 获取授权码(code)
      * @param $params
      * @param null $options
      * @return mixed
@@ -184,6 +202,23 @@ abstract class ApiResource extends VisionRhythmObject
     }
 
     /**
+     * 获取授权码(code) ，静默授权， 抖音app内部 才有效
+     * @param $params
+     * @param null $options
+     * @return string
+     * @throws Error\Api
+     */
+    protected static function _authAuthorize($params, $options = null)
+    {
+
+        self::_validateParams($params);
+        $url = "https://aweme.snssdk.com/oauth/authorize/v2/";
+        return $url . '?' . http_build_query($params);
+    }
+
+
+    /**
+     * 获取access_token
      * @param $params
      * @param null $options
      * @return mixed
@@ -200,7 +235,24 @@ abstract class ApiResource extends VisionRhythmObject
         return Util\Util::convertToVisionRhythmObject($response, $opts);
     }
 
-    protected static function _authRefresh($params = null, $options = null)
+    /**
+     * 刷新refresh_token
+     * Scope: `renew_refresh_token `不需要授权
+     * 该接口用于刷新refresh_token的有效期；该接口适用于抖音授权。
+     * 注意：
+     * 抖音的OAuth API以https://open.douyin.com/开头。
+     * 通过旧的refresh_token获取新的refresh_token，调用后旧refresh_token会失效，新refresh_token有30天有效期。最多只能获取5次新的refresh_token，5次过后需要用户重新授权。
+     * 使用本接口前提：
+     * client_key必须需要具备renew_refresh_token这个权限。
+     * POST /oauth/renew_refresh_token/
+     * Content-Type: multipart/form-data
+     * @param null $params
+     * @param null $options
+     * @return array|Util\stdObject|VisionrhythmObject
+     * @throws Error\Api
+     * @throws InvalidRequest
+     */
+    protected static function _authRenewRefreshToken($params = null, $options = null)
     {
         self::_validateParams($params);
         $url = "/oauth/renew_refresh_token/";
@@ -208,6 +260,41 @@ abstract class ApiResource extends VisionRhythmObject
         list($response, $opts) = static::_staticRequest('post', $url, $params, $options);
         return Util\Util::convertToVisionRhythmObject($response, $opts);
     }
+
+    /**
+     * 刷新access_token
+        该接口用于刷新access_token的有效期；该接口适用于抖音/头条授权。
+
+        注意：
+
+        抖音的OAuth API以https://open.douyin.com/开头。
+        头条的OAuth API以https://open.snssdk.com/开头。
+        西瓜的OAuth API以https://open-api.ixigua.com/开头。
+        刷新access_token或续期不会改变refresh_token的有效期；如果需要刷新refresh_token有效期可以调用/oauth/renew_refresh_token/接口。
+
+
+        access_token有效期说明：
+
+        当access_token过期（过期时间15天）后，可以通过该接口使用refresh_token（过期时间30天）进行刷新：
+
+        1. 若access_token已过期，调用接口会报错(error_code=10008或2190008)，refresh_token后会获取一个新的access_token以及新的超时时间。
+        2. 若access_token未过期，refresh_token不会改变原来的access_token，但超时时间会更新，相当于续期。
+        3. 若refresh_token过期，获取access_token会报错(error_code=10010)，此时需要重新走用户授权流程。
+     * @param null $params
+     * @param null $options
+     * @return array|Util\stdObject|VisionrhythmObject
+     * @throws Error\Api
+     * @throws InvalidRequest
+     */
+    protected static function _authRefreshAccessToken($params = null, $options = null)
+    {
+        self::_validateParams($params);
+        $url = "/oauth/refresh_token/";
+
+        list($response, $opts) = static::_staticRequest('post', $url, $params, $options);
+        return Util\Util::convertToVisionRhythmObject($response, $opts);
+    }
+
 
     protected static function _userInfo($params = null)
     {
@@ -254,7 +341,7 @@ abstract class ApiResource extends VisionRhythmObject
         self::_validateParams($options);
         $url = "/video/create/?" . http_build_query($params);
 
-        list($response, $opts) = static::_staticRequest('post', $url, $options, null);
+        list($response, $opts) = static::_staticRequest('post', $url, json_encode($options), null);
         return Util\Util::convertToVisionRhythmObject($response, $opts);
 
     }
@@ -315,6 +402,40 @@ abstract class ApiResource extends VisionRhythmObject
     {
         self::_validateParams($params);
         $url = "/video/search/";
+
+        list($response, $opts) = static::_staticRequest('get', $url, $params, null);
+        return Util\Util::convertToVisionRhythmObject($response, $opts);
+    }
+
+
+    //  数据服务
+
+    /**
+     * 获取用户视频情况
+     * @param $params
+     * @return array|Util\stdObject|VisionrhythmObject
+     * @throws Error\Api
+     * @throws InvalidRequest
+     */
+    protected static function _userExternalVideo($params)
+    {
+        self::_validateParams($params);
+        $url = "/data/external/user/item/";
+
+        list($response, $opts) = static::_staticRequest('get', $url, $params, null);
+        return Util\Util::convertToVisionRhythmObject($response, $opts);
+    }
+    /**
+     * 用户粉丝数据
+     * @param $params
+     * @return array|Util\stdObject|VisionrhythmObject
+     * @throws Error\Api
+     * @throws InvalidRequest
+     */
+    protected static function _userExternalFans($params)
+    {
+        self::_validateParams($params);
+        $url = "/data/external/user/fans/";
 
         list($response, $opts) = static::_staticRequest('get', $url, $params, null);
         return Util\Util::convertToVisionRhythmObject($response, $opts);
